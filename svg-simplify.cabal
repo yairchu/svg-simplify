@@ -14,13 +14,19 @@ extra-source-files:  README.md
 executable svg-simplify
   hs-source-dirs:      src
   default-language:    Haskell2010
+  ghc-options: -Wall -Widentities -Wmissing-home-modules -Wincomplete-patterns -Wnoncanonical-monad-instances -Wsemigroup -Wincomplete-record-updates -Wredundant-constraints
   main-is:             Main.hs
   other-modules:
     Paths_svg_simplify,
-    Simplify
+    Simplify,
+    Svg
   build-depends:
     base >= 4.7 && < 5,
+    containers,
+    directory,
+    hashable,
+    JuicyPixels,
     lens,
     optparse-applicative,
-    pretty-simple,
-    svg-tree
+    svg-tree,
+    text
