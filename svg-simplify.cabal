@@ -22,6 +22,7 @@ executable svg-simplify
     Svg
   build-depends:
     base >= 4.7 && < 5,
+    bytestring,
     containers,
     directory,
     hashable,
@@ -29,4 +30,5 @@ executable svg-simplify
     lens,
     optparse-applicative,
     svg-tree,
-    text
+    text,
+    xml

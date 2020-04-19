@@ -4,13 +4,17 @@ module Main where
 
 import Control.Applicative ((<|>))
 import Control.Lens.Operators
+import qualified Data.ByteString as B
+import qualified Data.Text as T
+import qualified Data.Text.Encoding as T
 import Data.Version (showVersion)
-import Graphics.Svg (loadSvgFile, saveXmlFile)
+import Graphics.Svg (loadSvgFile, xmlOfDocument)
 import qualified Options.Applicative as O
 import Paths_svg_simplify (version)
 import Simplify (simplifyDocument)
 import System.Directory (copyFile)
 import System.Exit (exitFailure, exitSuccess)
+import qualified Text.XML.Light.Output as XML
 
 newtype Options
   = Options
@@ -51,6 +55,14 @@ main =
       >>= \case
         Nothing -> putStrLn ("Failed to parse SVG file: " <> filename) >> exitFailure
         Just svg ->
-          do
-            copyFile filename (filename <> ".bak")
-            saveXmlFile filename (simplifyDocument svg)
+          result
+            `seq` do
+              copyFile filename (filename <> ".bak")
+              B.writeFile filename result
+          where
+            result =
+              simplifyDocument svg
+                & xmlOfDocument
+                & XML.ppcTopElement XML.prettyConfigPP
+                & T.pack
+                & T.encodeUtf8
