@@ -8,6 +8,14 @@ Specifically, the ["mask"](https://developer.mozilla.org/en-US/docs/Web/SVG/Elem
 
 `svg-simplify` replaces masks with gradients **in some situations**. It may crash or still have bugs so be sure to verify its results!
 
+## Installation
+
+### Recommended: Build from source using haskell-stack
+
+* Install [haskell stack](http://docs.haskellstack.org/en/stable/README/)
+* Clone this project
+* From the source folder, run `stack install`
+
 ## SVG features support
 
 | Program      | `mask`
