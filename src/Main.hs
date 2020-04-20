@@ -5,6 +5,7 @@ module Main where
 import Control.Applicative ((<|>))
 import Control.Lens.Operators
 import qualified Data.ByteString as B
+import Data.Foldable (traverse_)
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as T
 import Data.Version (showVersion)
@@ -18,7 +19,7 @@ import qualified Text.XML.Light.Output as XML
 
 newtype Options
   = Options
-      { _filename :: FilePath
+      { _filenames :: [FilePath]
       }
 
 data CmdArgs = CmdVersion | CmdOptions Options
@@ -38,7 +39,7 @@ parser =
         (O.long "version" <> O.short 'v' <> O.help "Print the version and quit")
     optsParser =
       Options
-        <$> O.argument O.str (O.metavar "FILE")
+        <$> O.some (O.argument O.str (O.metavar "FILES..."))
 
 getOpts :: IO Options
 getOpts =
@@ -47,22 +48,26 @@ getOpts =
       CmdVersion -> putStrLn ("svg-simplify version " ++ showVersion version) >> exitSuccess
       CmdOptions o -> return o
 
+processFile :: FilePath -> IO ()
+processFile filename =
+  loadSvgFile filename
+    >>= \case
+      Nothing -> putStrLn ("Failed to parse SVG file: " <> filename) >> exitFailure
+      Just svg ->
+        result
+          `seq` do
+            copyFile filename (filename <> ".bak")
+            B.writeFile filename result
+        where
+          result =
+            simplifyDocument svg
+              & xmlOfDocument
+              & XML.ppcTopElement XML.prettyConfigPP
+              & T.pack
+              & T.encodeUtf8
+
 main :: IO ()
 main =
   do
-    Options filename <- getOpts
-    loadSvgFile filename
-      >>= \case
-        Nothing -> putStrLn ("Failed to parse SVG file: " <> filename) >> exitFailure
-        Just svg ->
-          result
-            `seq` do
-              copyFile filename (filename <> ".bak")
-              B.writeFile filename result
-          where
-            result =
-              simplifyDocument svg
-                & xmlOfDocument
-                & XML.ppcTopElement XML.prettyConfigPP
-                & T.pack
-                & T.encodeUtf8
+    Options filenames <- getOpts
+    traverse_ processFile filenames
