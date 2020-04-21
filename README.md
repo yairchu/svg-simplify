@@ -21,19 +21,13 @@ Specifically, the ["mask"](https://developer.mozilla.org/en-US/docs/Web/SVG/Elem
 <table>
   <thead>
     <tr>
-      <th colspan=2>
-        SVG rendering feature support
-      </th>
-      <th style="font-family: monospace">
-        mask
-      </th>
+      <th colspan=2> SVG rendering feature support </th>
+      <th> mask </th>
     </tr>
   </thead>
   <tbody>
     <tr>
-      <th rowspan=3>
-        Browsers
-      </th>
+      <th rowspan=3> Browsers </th>
       <th> Chrome </th>
       <td> &#9989; </td>
     </tr>
@@ -46,9 +40,7 @@ Specifically, the ["mask"](https://developer.mozilla.org/en-US/docs/Web/SVG/Elem
       <td> &#10008; </td>
     </tr>
     <tr>
-      <th rowspan=3>
-        Drawing Apps
-      </th>
+      <th rowspan=3> Drawing Apps </th>
       <th> Adobe Illustrator </th>
       <td> &#10008; </td>
     </tr>
@@ -61,9 +53,7 @@ Specifically, the ["mask"](https://developer.mozilla.org/en-US/docs/Web/SVG/Elem
       <td> &#10008; </td>
     </tr>
     <tr>
-      <th rowspan=3>
-        Conversion Tools
-      </th>
+      <th rowspan=3> Conversion Tools </th>
       <th> ImageMagick </th>
       <td> &#9989; </td>
     </tr>
