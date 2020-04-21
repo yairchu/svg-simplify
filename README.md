@@ -18,12 +18,72 @@ Specifically, the ["mask"](https://developer.mozilla.org/en-US/docs/Web/SVG/Elem
 
 ## SVG features support
 
-| Program      | `mask`
-| ------------ | --------
-| Chrome       | &#9989;
-| Firefox      | &#9989;
-| Safari       | &#10008;
-| ImageMagick  | &#9989;
-| rsvg-convert | &#9989;
-| qlmanage     | &#10008;
-| JUCE         | &#10008;
+<table>
+  <style>
+    td { text-align: center; }
+  </style>
+  <thead>
+    <tr>
+      <th colspan=2>
+        SVG rendering feature support
+      </th>
+      <th style="font-family: monospace; text-align: center">
+        mask
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr style="border-top: solid">
+      <th rowspan=3>
+        Browsers
+      </th>
+      <th> Chrome </th>
+      <td> &#9989; </td>
+    </tr>
+    <tr>
+      <th> Firefox </th>
+      <td> &#9989; </td>
+    </tr>
+    <tr>
+      <th> Safari </th>
+      <td> &#10008; </td>
+    </tr>
+    <tr style="border-top: solid">
+      <th rowspan=2>
+        Drawing Apps
+      </th>
+      <th> Adobe Illustrator </th>
+      <td> &#10008; </td>
+    </tr>
+    <tr>
+      <th> InkScape </th>
+      <td> &#9989; </td>
+    </tr>
+    <tr style="border-top: solid">
+      <th rowspan=3>
+        Conversion Tools
+      </th>
+      <th> ImageMagick </th>
+      <td> &#9989; </td>
+    </tr>
+    <tr>
+      <th> rsvg-convert </th>
+      <td> &#9989; </td>
+    </tr>
+    <tr>
+      <th> qlmanage </th>
+      <td> &#10008; </td>
+    </tr>
+    <tr style="border-top: solid">
+      <th> Libraries </th>
+      <th> JUCE </th>
+      <td> &#10008; </td>
+    </tr>
+    <tr style="border-top: solid">
+      <th> Other </th>
+      <th> VS Code Preview </th>
+      <td> &#9989; </td>
+    </tr>
+  </tbody>
+</tr>
+</table>
