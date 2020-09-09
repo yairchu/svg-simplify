@@ -4,9 +4,10 @@ Do you have SVG files that render fine with some browsers or programs but render
 
 This is due to software not supporting all of SVG's features.
 
-Specifically, the ["mask"](https://developer.mozilla.org/en-US/docs/Web/SVG/Element/mask) feature is not supported by several programs.
+## Simplified features
 
-`svg-simplify` replaces masks with gradients **in some situations**. It may crash or still have bugs so be sure to verify its results!
+* ["mask"](https://developer.mozilla.org/en-US/docs/Web/SVG/Element/mask). `svg-simplify` replaces masks with gradients **in some situations**
+* css rules for each class are grouped together (some engines don't support them being split over several rules)
 
 ## Installation
 
@@ -23,6 +24,7 @@ Specifically, the ["mask"](https://developer.mozilla.org/en-US/docs/Web/SVG/Elem
     <tr>
       <th colspan=2> SVG rendering feature support </th>
       <th> mask </th>
+      <th> css rule aggregation </th>
     </tr>
   </thead>
   <tbody>
@@ -30,19 +32,23 @@ Specifically, the ["mask"](https://developer.mozilla.org/en-US/docs/Web/SVG/Elem
       <th rowspan=3> Browsers </th>
       <th> Chrome </th>
       <td> &#9989; </td>
+      <td> &#9989; </td>
     </tr>
     <tr>
       <th> Firefox </th>
+      <td> &#9989; </td>
       <td> &#9989; </td>
     </tr>
     <tr>
       <th> Safari </th>
       <td> &#10008; </td>
+      <td> &#9989; </td>
     </tr>
     <tr>
       <th rowspan=3> Drawing Apps </th>
       <th> Adobe Illustrator </th>
       <td> &#10008; </td>
+      <td rowspan=6> TODO:<br/>check </td>
     </tr>
     <tr>
       <th> InkScape </th>
@@ -69,10 +75,12 @@ Specifically, the ["mask"](https://developer.mozilla.org/en-US/docs/Web/SVG/Elem
       <th> Libraries </th>
       <th> JUCE </th>
       <td> &#10008; </td>
+      <td> &#10008; </td>
     </tr>
     <tr>
       <th> Other </th>
       <th> VS Code Preview </th>
+      <td> &#9989; </td>
       <td> &#9989; </td>
     </tr>
   </tbody>

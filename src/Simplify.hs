@@ -1,4 +1,4 @@
-{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE OverloadedStrings, TupleSections #-}
 
 module Simplify
   ( simplifyDocument,
@@ -25,12 +25,18 @@ simplifyDocument doc =
     & elements .~ fixedElems
     & definitions %~ Map.filter (not . Lens.has _ElementMask)
     & definitions <>~ newDefs
-    & styleRules . Lens.mapped %~ cssRuleRemoveMasks
+    & styleRules %~ squashCssClasses . fmap cssRuleRemoveMasks
   where
     (newDefs, fixedElems) = traverse (simplifyTree doc) (doc ^. elements)
 
 cssRuleRemoveMasks :: CssRule -> CssRule
 cssRuleRemoveMasks = _cssDeclarations %~ filter ((/= "mask") . (^. cssDeclarationProperty))
+
+squashCssClasses :: [CssRule] -> [CssRule]
+squashCssClasses =
+    map (\(k, v) -> CssRule [k] v) . Map.toList . Map.fromListWith (<>) . (>>= disperse)
+    where
+      disperse (CssRule sels decs) = sels <&> (, decs)
 
 type Definitions = Map String Element
 
