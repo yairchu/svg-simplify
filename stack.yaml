@@ -1,3 +1,6 @@
 resolver: lts-15.6
 packages:
 - .
+extra-deps:
+- github: yairchu/svg-tree
+  commit: f17d54bbeddd80f9728c6c8263f09c3e50df3d99

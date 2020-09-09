@@ -5,8 +5,6 @@ module Svg
   ( _CssColor,
     _CssFunction,
     _CssReference,
-    cssDeclarationValues,
-    cssDeclarationProperty,
     _cssDeclarations,
     _ElementMask,
     treeChildren,
@@ -52,12 +50,6 @@ _ElementMask =
     \case
       ElementMask x -> Right x
       x -> Left x
-
-cssDeclarationValues :: Lens.Lens' CssDeclaration [[CssElement]]
-cssDeclarationValues f (CssDeclaration p v) = f v <&> CssDeclaration p
-
-cssDeclarationProperty :: Lens.Lens' CssDeclaration Text
-cssDeclarationProperty f (CssDeclaration p v) = f p <&> (`CssDeclaration` v)
 
 _cssDeclarations :: Lens.Lens' CssRule [CssDeclaration]
 _cssDeclarations f (CssRule s d) = f d <&> CssRule s
