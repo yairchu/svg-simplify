@@ -34,7 +34,9 @@ cssRuleRemoveMasks = _cssDeclarations %~ filter ((/= "mask") . (^. cssDeclaratio
 
 squashCssClasses :: [CssRule] -> [CssRule]
 squashCssClasses =
-    map (\(k, v) -> CssRule [k] v) . Map.toList . Map.fromListWith (<>) . (>>= disperse)
+    map (\(k, v) -> CssRule v k) .
+    Map.toList . Map.fromListWith (<>) . map (\(k, v) -> (v, [k])) .
+    Map.toList . Map.fromListWith (<>) . (>>= disperse)
     where
       disperse (CssRule sels decs) = sels <&> (, decs)
 
