@@ -132,7 +132,7 @@ fixTexture doc (Ref maskId) x =
               | otherwise =
                 stop
                   & gradientColor .~ col
-                  & gradientOpacity ?~ ((fromIntegral mr / 255) * (fromIntegral ma / 255))
+                  & gradientOpacity ?~ (fromIntegral mr / 255 * (fromIntegral ma / 255))
               where
                 PixelRGBA8 mr mg mb ma = stop ^. gradientColor
         TextureRef fillTexture ->
@@ -146,8 +146,8 @@ fixTexture doc (Ref maskId) x =
                   & makeTexture
               where
                 offsets =
-                  (f ^.. linearGradientStops . traverse . gradientOffset)
-                    <> (m ^.. linearGradientStops . traverse . gradientOffset)
+                  f ^.. linearGradientStops . traverse . gradientOffset
+                    <> m ^.. linearGradientStops . traverse . gradientOffset
                     & Set.fromList
                     & Set.toList
                 mkStop offset
@@ -156,7 +156,7 @@ fixTexture doc (Ref maskId) x =
                     -- TODO: Don't just override prev opacity
                     stop
                       & gradientOpacity
-                        ?~ ((fromIntegral ma / 255) * (fromIntegral mr / 255))
+                        ?~ (fromIntegral ma / 255 * (fromIntegral mr / 255))
                   where
                     stop = gradientLookup (f ^. linearGradientStops) offset
                     PixelRGBA8 mr mg mb ma =
