@@ -4,7 +4,6 @@
 
 module Svg
   ( treeChildren,
-    traverseTreeChildren,
     maskRefFromCssDecls,
     textureFromCssDecls,
     gradientLookup,
@@ -21,15 +20,10 @@ import Data.Text (Text, unpack)
 import Graphics.Svg hiding (Text)
 import Graphics.Svg.CssTypes
 
-treeChildren :: Tree -> [Tree]
-treeChildren (GroupTree x) = x ^.. groupChildren . traverse
-treeChildren (SymbolTree x) = x ^.. groupOfSymbol . groupChildren . traverse
-treeChildren _ = []
-
-traverseTreeChildren :: Applicative f => (Tree -> f Tree) -> Tree -> f Tree
-traverseTreeChildren f (GroupTree x) = (groupChildren . traverse) f x <&> GroupTree
-traverseTreeChildren f (SymbolTree x) = (groupOfSymbol . groupChildren . traverse) f x <&> SymbolTree
-traverseTreeChildren _ x = pure x
+treeChildren :: Lens.Traversal' Tree Tree
+treeChildren f (GroupTree x) = (groupChildren . traverse) f x <&> GroupTree
+treeChildren f (SymbolTree x) = (groupOfSymbol . groupChildren . traverse) f x <&> SymbolTree
+treeChildren _ x = pure x
 
 maskRefFromCssDecls :: [CssDeclaration] -> Maybe ElementRef
 maskRefFromCssDecls decls =

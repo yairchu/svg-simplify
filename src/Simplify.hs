@@ -52,7 +52,7 @@ type Context = (DrawAttributes, CssContext Tree)
 simplifyTreeH :: Document -> Context -> Tree -> (Definitions, Tree)
 simplifyTreeH doc parentCtx tree =
   do
-    fixedTree <- traverseTreeChildren (simplifyTreeH doc ctx) tree
+    fixedTree <- treeChildren (simplifyTreeH doc ctx) tree
     case fixedTree of
       GroupTree {} -> pure fixedTree
       SymbolTree {} -> pure fixedTree
@@ -171,7 +171,7 @@ fixTexture doc (Ref maskId) x =
 findFill :: [CssRule] -> Context -> Tree -> Maybe Texture
 findFill cssRules parentCtx tree =
   drawAttrs ^. fillColor . Lens._Wrapped
-    <|> (treeChildren tree <&> findFill cssRules ctx) ^? traverse . Lens._Just
+    <|> (tree ^.. treeChildren <&> findFill cssRules ctx) ^? traverse . Lens._Just
   where
     ctx@(drawAttrs, _) = accumulateContext cssRules tree parentCtx
 
