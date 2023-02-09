@@ -10,13 +10,13 @@ import Control.Applicative ((<|>))
 import qualified Control.Lens as Lens
 import Control.Lens.Operators
 import Control.Monad (guard)
+import Data.Containers.ListUtils (nubOrd)
 import Data.Generics.Product
 import Data.Generics.Sum
 import Data.Hashable (Hashable (..))
 import Data.Map (Map)
 import qualified Data.Map as Map
 import Data.Monoid (Last (..))
-import qualified Data.Set as Set
 import Graphics.Svg
 import Graphics.Svg.CssTypes
 import Svg
@@ -149,8 +149,7 @@ fixTexture doc (Ref maskId) x =
                 offsets =
                   f ^.. linearGradientStops . traverse . gradientOffset
                     <> m ^.. linearGradientStops . traverse . gradientOffset
-                    & Set.fromList
-                    & Set.toList
+                    & nubOrd
                 mkStop offset
                   | mr /= mg || mg /= mb = error "TODO: Colored mask?"
                   | otherwise =
