@@ -28,6 +28,7 @@ executable svg-simplify
     hashable,
     JuicyPixels,
     lens,
+    generic-lens,
     optparse-applicative,
     svg-tree,
     text,

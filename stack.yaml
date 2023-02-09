@@ -3,5 +3,4 @@ packages:
 - .
 extra-deps:
 - github: yairchu/svg-tree
-  commit: 65fba0f7c64376a2d31d68914cecbc22f61537e2
-allow-newer: true
+  commit: d75a8f8919504d0c5cb9c23bae43d09fae6ccf65

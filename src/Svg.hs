@@ -1,13 +1,9 @@
-{-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE TypeApplications #-}
+{-# LANGUAGE DataKinds #-}
 
 module Svg
-  ( _CssColor,
-    _CssFunction,
-    _CssReference,
-    _cssDeclarations,
-    _ElementMask,
-    treeChildren,
+  ( treeChildren,
     traverseTreeChildren,
     maskRefFromCssDecls,
     textureFromCssDecls,
@@ -19,40 +15,11 @@ where
 import Codec.Picture.Types (PixelRGBA8 (..))
 import qualified Control.Lens as Lens
 import Control.Lens.Operators
+import Data.Generics.Product (HasField(..))
+import Data.Generics.Sum (AsConstructor(..))
 import Data.Text (Text, unpack)
 import Graphics.Svg hiding (Text)
 import Graphics.Svg.CssTypes
-
-_CssColor :: Lens.Prism' CssElement PixelRGBA8
-_CssColor =
-  Lens.prism CssColor $
-    \case
-      CssColor x -> Right x
-      x -> Left x
-
-_CssFunction :: Lens.Prism' CssElement (Text, [CssElement])
-_CssFunction =
-  Lens.prism (uncurry CssFunction) $
-    \case
-      CssFunction x y -> Right (x, y)
-      x -> Left x
-
-_CssReference :: Lens.Prism' CssElement Text
-_CssReference =
-  Lens.prism CssReference $
-    \case
-      CssReference x -> Right x
-      x -> Left x
-
-_ElementMask :: Lens.Prism' Element Mask
-_ElementMask =
-  Lens.prism ElementMask $
-    \case
-      ElementMask x -> Right x
-      x -> Left x
-
-_cssDeclarations :: Lens.Lens' CssRule [CssDeclaration]
-_cssDeclarations f (CssRule s d) = f d <&> CssRule s
 
 treeChildren :: Tree -> [Tree]
 treeChildren (GroupTree x) = x ^.. groupChildren . traverse
@@ -68,8 +35,8 @@ maskRefFromCssDecls :: [CssDeclaration] -> Maybe ElementRef
 maskRefFromCssDecls decls =
   decls
     ^? traverse
-      . Lens.filteredBy (cssDeclarationProperty . Lens.only "mask")
-      . cssDeclarationValues
+      . Lens.filteredBy (field @"_cssDeclarationProperty" . Lens.only "mask")
+      . field @"_cssDeclarationValues"
       . traverse
       . traverse
       . cssRefFromElement
@@ -78,22 +45,22 @@ maskRefFromCssDecls decls =
 
 cssRefFromElement :: Lens.Traversal' CssElement Text
 cssRefFromElement =
-  _CssFunction
+  _Ctor @"CssFunction"
     . Lens.filteredBy (Lens._1 . Lens.only "url")
     . Lens._2
     . traverse
-    . _CssReference
+    . _Ctor @"CssReference"
 
 textureFromCssDecls :: Text -> [CssDeclaration] -> Maybe Texture
 textureFromCssDecls attribute decls =
   decls
     ^? traverse
-    . Lens.filteredBy (cssDeclarationProperty . Lens.only attribute)
-    . cssDeclarationValues
+    . Lens.filteredBy (field @"_cssDeclarationProperty" . Lens.only attribute)
+    . field @"_cssDeclarationValues"
     . traverse
     . traverse
     . Lens.failing
-      (_CssColor . Lens.to ColorRef)
+      (_Ctor @"CssColor" . Lens.to ColorRef)
       (cssRefFromElement . Lens.to (TextureRef . unpack))
 
 gradientLookup :: [GradientStop] -> Float -> GradientStop

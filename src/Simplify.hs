@@ -1,4 +1,4 @@
-{-# LANGUAGE OverloadedStrings, TupleSections #-}
+{-# LANGUAGE OverloadedStrings, TupleSections, DataKinds, TypeApplications #-}
 
 module Simplify
   ( simplifyDocument,
@@ -10,6 +10,8 @@ import Control.Applicative ((<|>))
 import qualified Control.Lens as Lens
 import Control.Lens.Operators
 import Control.Monad (guard)
+import Data.Generics.Product
+import Data.Generics.Sum
 import Data.Hashable (Hashable (..))
 import Data.Map (Map)
 import qualified Data.Map as Map
@@ -23,14 +25,14 @@ simplifyDocument :: Document -> Document
 simplifyDocument doc =
   doc
     & elements .~ fixedElems
-    & definitions %~ Map.filter (not . Lens.has _ElementMask)
+    & definitions %~ Map.filter (not . Lens.has (_Ctor @"ElementMask"))
     & definitions <>~ newDefs
     & styleRules %~ squashCssClasses . fmap cssRuleRemoveMasks
   where
     (newDefs, fixedElems) = traverse (simplifyTree doc) (doc ^. elements)
 
 cssRuleRemoveMasks :: CssRule -> CssRule
-cssRuleRemoveMasks = _cssDeclarations %~ filter ((/= "mask") . (^. cssDeclarationProperty))
+cssRuleRemoveMasks = field @"cssDeclarations" %~ filter ((/= "mask") . (^. field @"_cssDeclarationProperty"))
 
 squashCssClasses :: [CssRule] -> [CssRule]
 squashCssClasses =
@@ -104,7 +106,7 @@ fixTexture _ RefNone x = pure x
 fixTexture _ _ FillNone = pure FillNone
 fixTexture doc (Ref maskId) x =
   case doc
-    ^? definitions . Lens.ix maskId . _ElementMask . maskContent . traverse
+    ^? definitions . Lens.ix maskId . _Ctor @"ElementMask" . maskContent . traverse
       . Lens.to (findFill (doc ^. styleRules) mempty)
       . Lens._Just of
     Nothing -> error "TODO: Mask not found?"
