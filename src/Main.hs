@@ -45,7 +45,7 @@ getOpts :: IO Options
 getOpts =
   O.execParser parser
     >>= \case
-      CmdVersion -> putStrLn ("svg-simplify version " ++ showVersion version) >> exitSuccess
+      CmdVersion -> putStrLn ("svg-simplify version " <> showVersion version) >> exitSuccess
       CmdOptions o -> pure o
 
 processFile :: FilePath -> IO ()

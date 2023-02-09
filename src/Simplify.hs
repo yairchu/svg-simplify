@@ -112,8 +112,7 @@ fixTexture doc (Ref maskId) x =
     Just ColorRef {} -> error "TODO: SVG uses color as mask?"
     Just (TextureRef maskTexture) ->
       case x of
-        FillNone -> pure FillNone
-        (ColorRef col) ->
+        ColorRef col ->
           case maskDef of
             ElementLinearGradient grad ->
               grad
