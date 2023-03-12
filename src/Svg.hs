@@ -34,8 +34,7 @@ maskRefFromCssDecls decls =
       . traverse
       . traverse
       . cssRefFromElement
-    <&> unpack
-    <&> Ref
+    <&> Ref . unpack
 
 cssRefFromElement :: Lens.Traversal' CssElement Text
 cssRefFromElement =
