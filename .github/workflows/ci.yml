@@ -1,0 +1,73 @@
+name: CI
+
+on:
+  workflow_dispatch:
+  pull_request:
+    types: [synchronize, opened, reopened]
+  push:
+    branches: [master]
+    tags:
+      - 'v*'
+  schedule:
+    # additionally run once per week (At 00:00 on Sunday) to maintain cache
+    - cron: '0 0 * * 0'
+
+jobs:
+  stack:
+    name: ghc ${{ matrix.ghc }} / ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        stack: ["2.7.5"]
+        ghc: ["9.2.5"]
+        os: ["ubuntu-latest", "windows-2022"]
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - uses: haskell/actions/setup@v2.3
+      name: Setup Haskell Stack
+      with:
+        ghc-version: ${{ matrix.ghc }}
+        stack-version: ${{ matrix.stack }}
+
+    - uses: actions/cache@v3.2.5
+      if: ${{ matrix.os == 'ubuntu-latest' }}
+      name: Cache ~/.stack
+      with:
+        path: ~/.stack
+        key: ${{ runner.os }}-${{ matrix.ghc }}-stack
+
+    - name: Install Haskell dependencies
+      run: |
+        stack build --system-ghc --only-dependencies
+
+    - name: Build
+      run: |
+        stack install --system-ghc --local-bin-path .
+
+    - name: Upload release
+      if: startsWith(github.ref, 'refs/tags/v')
+      id: upload-release-asset
+      uses: softprops/action-gh-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        files: ${{ matrix.os == 'ubuntu-latest' && 'svg-simplify' || 'svg-simplify.exe' }}
+
+  hlint:
+    name: hlint
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Run HLint
+      env:
+         HLINT_VERSION: "3.5"
+      run: |
+        curl -L https://github.com/ndmitchell/hlint/releases/download/v${HLINT_VERSION}/hlint-${HLINT_VERSION}-x86_64-linux.tar.gz --output hlint.tar.gz
+        tar -xvf hlint.tar.gz
+        ./hlint-${HLINT_VERSION}/hlint src/
