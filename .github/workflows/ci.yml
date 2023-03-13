@@ -48,6 +48,11 @@ jobs:
       run: |
         stack install --system-ghc --local-bin-path .
 
+    - name: Package
+      if: ${{ matrix.os == 'ubuntu-latest' || matrix.os == 'macos-12' }}
+      run: |
+        tar -czf svg-simplify-${{matrix.os}}.tgz svg-simplify
+
     - name: Upload release
       if: startsWith(github.ref, 'refs/tags/v')
       id: upload-release-asset
@@ -55,7 +60,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        files: ${{ (matrix.os == 'ubuntu-latest' || matrix.os == 'macos-12') && 'svg-simplify' || 'svg-simplify.exe' }}
+        files: ${{ matrix.os == 'windows-2022' && 'svg-simplify.exe' || 'svg-simplify-*.tgz' }}
 
   hlint:
     name: hlint
