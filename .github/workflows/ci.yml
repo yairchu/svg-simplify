@@ -20,7 +20,7 @@ jobs:
       matrix:
         stack: ["2.7.5"]
         ghc: ["9.2.5"]
-        os: ["ubuntu-latest", "windows-2022"]
+        os: ["ubuntu-latest", "windows-2022", "macos-12"]
 
     runs-on: ${{ matrix.os }}
 
@@ -34,7 +34,7 @@ jobs:
         stack-version: ${{ matrix.stack }}
 
     - uses: actions/cache@v3.3.1
-      if: ${{ matrix.os == 'ubuntu-latest' }}
+      if: ${{ matrix.os == 'ubuntu-latest' || matrix.os == 'macos-12' }}
       name: Cache ~/.stack
       with:
         path: ~/.stack
@@ -55,7 +55,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        files: ${{ matrix.os == 'ubuntu-latest' && 'svg-simplify' || 'svg-simplify.exe' }}
+        files: ${{ (matrix.os == 'ubuntu-latest' || matrix.os == 'macos-12') && 'svg-simplify' || 'svg-simplify.exe' }}
 
   hlint:
     name: hlint
