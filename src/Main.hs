@@ -17,10 +17,9 @@ import System.Directory (copyFile)
 import System.Exit (exitFailure, exitSuccess)
 import qualified Text.XML.Light.Output as XML
 
-newtype Options
-  = Options
-      { _filenames :: [FilePath]
-      }
+newtype Options = Options
+  { _filenames :: [FilePath]
+  }
 
 data CmdArgs = CmdVersion | CmdOptions Options
 
@@ -54,8 +53,8 @@ processFile filename =
     >>= \case
       Nothing -> putStrLn ("Failed to parse SVG file: " <> filename) >> exitFailure
       Just svg ->
-        result
-          `seq` do
+        result `seq`
+          do
             copyFile filename (filename <> ".bak")
             B.writeFile filename result
         where

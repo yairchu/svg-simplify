@@ -1,4 +1,7 @@
-{-# LANGUAGE OverloadedStrings, TupleSections, DataKinds, TypeApplications #-}
+{-# LANGUAGE DataKinds #-}
+{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE TupleSections #-}
+{-# LANGUAGE TypeApplications #-}
 
 module Simplify
   ( simplifyDocument,
@@ -36,11 +39,15 @@ cssRuleRemoveMasks = field @"cssDeclarations" %~ filter ((/= "mask") . (^. field
 
 squashCssClasses :: [CssRule] -> [CssRule]
 squashCssClasses =
-    map (\(k, v) -> CssRule v k) .
-    Map.toList . Map.fromListWith (<>) . map (\(k, v) -> (v, [k])) .
-    Map.toList . Map.fromListWith (<>) . (>>= disperse)
-    where
-      disperse (CssRule sels decs) = sels <&> (, decs)
+  map (\(k, v) -> CssRule v k)
+    . Map.toList
+    . Map.fromListWith (<>)
+    . map (\(k, v) -> (v, [k]))
+    . Map.toList
+    . Map.fromListWith (<>)
+    . (>>= disperse)
+  where
+    disperse (CssRule sels decs) = sels <&> (,decs)
 
 type Definitions = Map String Element
 
@@ -106,7 +113,11 @@ fixTexture _ RefNone x = pure x
 fixTexture _ _ FillNone = pure FillNone
 fixTexture doc (Ref maskId) x =
   case doc
-    ^? definitions . Lens.ix maskId . _Ctor @"ElementMask" . maskContent . traverse
+    ^? definitions
+      . Lens.ix maskId
+      . _Ctor @"ElementMask"
+      . maskContent
+      . traverse
       . Lens.to (findFill (doc ^. styleRules) mempty)
       . Lens._Just of
     Nothing -> error "TODO: Mask not found?"
@@ -131,9 +142,9 @@ fixTexture doc (Ref maskId) x =
             fixStop stop
               | mr /= mg || mg /= mb = error "TODO: Colored mask?"
               | otherwise =
-                stop
-                  & gradientColor .~ col
-                  & gradientOpacity ?~ (fromIntegral mr / 255 * (fromIntegral ma / 255))
+                  stop
+                    & gradientColor .~ col
+                    & gradientOpacity ?~ (fromIntegral mr / 255 * (fromIntegral ma / 255))
               where
                 PixelRGBA8 mr mg mb ma = stop ^. gradientColor
         TextureRef fillTexture ->
@@ -141,10 +152,10 @@ fixTexture doc (Ref maskId) x =
             (ElementLinearGradient f, ElementLinearGradient m)
               | f ^. linearGradientStart == m ^. linearGradientStart
                   && f ^. linearGradientStop == m ^. linearGradientStop ->
-                f
-                  & linearGradientStops .~ (offsets <&> mkStop)
-                  & ElementLinearGradient
-                  & makeTexture
+                  f
+                    & linearGradientStops .~ (offsets <&> mkStop)
+                    & ElementLinearGradient
+                    & makeTexture
               where
                 offsets =
                   f ^.. linearGradientStops . traverse . gradientOffset
@@ -153,10 +164,10 @@ fixTexture doc (Ref maskId) x =
                 mkStop offset
                   | mr /= mg || mg /= mb = error "TODO: Colored mask?"
                   | otherwise =
-                    -- TODO: Don't just override prev opacity
-                    stop
-                      & gradientOpacity
-                        ?~ (fromIntegral ma / 255 * (fromIntegral mr / 255))
+                      -- TODO: Don't just override prev opacity
+                      stop
+                        & gradientOpacity
+                          ?~ (fromIntegral ma / 255 * (fromIntegral mr / 255))
                   where
                     stop = gradientLookup (f ^. linearGradientStops) offset
                     PixelRGBA8 mr mg mb ma =
