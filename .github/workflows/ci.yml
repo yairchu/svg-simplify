@@ -33,7 +33,7 @@ jobs:
         ghc-version: ${{ matrix.ghc }}
         stack-version: ${{ matrix.stack }}
 
-    - uses: actions/cache@v3.3.1
+    - uses: actions/cache@v3.3.2
       if: ${{ matrix.os == 'ubuntu-latest' || matrix.os == 'macos-12' }}
       name: Cache ~/.stack
       with:
